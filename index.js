@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json());
+
 let persons = [
     {
         id: 1,
@@ -72,6 +74,30 @@ app.delete('/api/persons/:id', (req, res) => {
     });
 });
 
+app.post('/api/persons', (req, res) => {
+    const person = req.body;
+
+    const generateId = () => {
+        let newId = 1;
+
+        while(persons.some(person => person.id === newId)) {
+            newId = Math.floor(Math.random() * 10000 + 1);
+        }
+        
+        return String(newId);
+    }
+
+    if(!person || !person.name) {
+        return res.status(400).json({
+            error: "syntax error: data missing or incomplete"
+        });
+    }
+
+    const newPerson = { id: generateId(), ...person };
+    persons = [...persons, newPerson];
+
+    console.log(newPerson);
+});
 
 const PORT = '3001';
 app.listen(PORT, () => console.log(`Listening on port ${PORT}.`));
