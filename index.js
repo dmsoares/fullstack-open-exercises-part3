@@ -87,14 +87,22 @@ app.post('/api/persons', (req, res) => {
         return String(newId);
     }
 
-    if(!person || !person.name) {
+    if(!person || !person.name || !person.number) {
         return res.status(400).json({
-            error: "syntax error: data missing or incomplete"
+            error: "syntax error: request incomplete"
         });
-    }
+    };
+
+    if(persons.some(existingPerson => existingPerson.name === person.name)) {
+        return res.status(405).json({
+            error: "name must be unique"
+        });
+    };
 
     const newPerson = { id: generateId(), ...person };
     persons = [...persons, newPerson];
+
+    res.json(newPerson);
 
     console.log(newPerson);
 });
