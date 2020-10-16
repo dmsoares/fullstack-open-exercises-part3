@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const persons = [
+let persons = [
     {
         id: 1,
         name: "Arto Hellas",
@@ -24,7 +24,17 @@ const persons = [
     },
 ]
 
-const PORT = '3001';
+const isPerson = (req, res, id, callback) => {
+    const person = persons.find(person => person.id === id);
+
+    if(!person) {
+        return res.status(404).json({
+            error: "no such person"
+        });
+    }
+
+    callback(person);
+}
 
 app.get(`/`, (req, res) => {
     res.json(persons);
@@ -44,9 +54,24 @@ app.get('/api/persons/:id', (req, res) => {
             error: "no such person"
         });
     }
+    
+    isPerson(req, res, id, person => {
+        res.json(person);
+        console.log(person);
+    });
 
-    res.json(person);
-    console.log(person);
 }); 
 
+app.delete('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id);
+
+    isPerson(req, res, id, person => {
+        persons = persons.filter(person => person.id !== id);
+        res.json(person);
+        console.log(`${person.name} was deleted!`);
+    });
+});
+
+
+const PORT = '3001';
 app.listen(PORT, () => console.log(`Listening on port ${PORT}.`));
