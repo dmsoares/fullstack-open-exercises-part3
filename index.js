@@ -30,4 +30,9 @@ app.get(`/`, (req, res) => {
     res.json(persons);
 });
 
+app.get('/info', (req, res) => {
+    const page = `<p>Phonebook has info for ${persons.length} people.</p><p>${new Date()}</p>`;
+    res.send(page);
+});
+
 app.listen(PORT, () => console.log(`Listening on port ${PORT}.`));
