@@ -1,7 +1,11 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 
-app.use(express.json());
+app
+    .use(express.json())
+    .use(morgan('tiny'));
+
 
 let persons = [
     {
@@ -59,7 +63,6 @@ app.get('/api/persons/:id', (req, res) => {
     
     isPerson(req, res, id, person => {
         res.json(person);
-        console.log(person);
     });
 
 }); 
@@ -70,7 +73,6 @@ app.delete('/api/persons/:id', (req, res) => {
     isPerson(req, res, id, person => {
         persons = persons.filter(person => person.id !== id);
         res.json(person);
-        console.log(`${person.name} was deleted!`);
     });
 });
 
@@ -104,7 +106,6 @@ app.post('/api/persons', (req, res) => {
 
     res.json(newPerson);
 
-    console.log(newPerson);
 });
 
 const PORT = '3001';
