@@ -7,6 +7,7 @@ const app = express();
 
 app
     .use(express.json())
+    .use(express.static('build'))
     .use(morgan((tokens, req, res) => {
         const log = [
             tokens.method(req, res),
@@ -42,7 +43,7 @@ let persons = [
 ]
 
 const isPerson = (req, res, id, callback) => {
-    const person = persons.find(person => person.id === id);
+    const person = persons.find(person => Number(person.id) === id);
 
     if(!person) {
         return res.status(404).json({
@@ -53,7 +54,7 @@ const isPerson = (req, res, id, callback) => {
     callback(person);
 }
 
-app.get(`/`, (req, res) => {
+app.get(`/api/persons`, (req, res) => {
     res.json(persons);
 });
 
@@ -64,7 +65,7 @@ app.get('/info', (req, res) => {
 
 app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id);
-    const person = persons.find(person => person.id === id);
+    const person = persons.find(person => Number(person.id) === id);
     
     if(!person) {
         return res.status(404).json({
@@ -82,7 +83,7 @@ app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id);
 
     isPerson(req, res, id, person => {
-        persons = persons.filter(person => person.id !== id);
+        persons = persons.filter(person => Number(person.id) !== id);
         res.json(person);
     });
 });
@@ -93,7 +94,7 @@ app.post('/api/persons', (req, res) => {
     const generateId = () => {
         let newId = 1;
 
-        while(persons.some(person => person.id === newId)) {
+        while(persons.some(person => Number(person.id) === newId)) {
             newId = Math.floor(Math.random() * 10000 + 1);
         }
         
