@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 
-if (process.argv.length < 3) { console.log('Please enter your password as an argument.\nYou can add a new entry to the phonebook by specifying the following arguments: <name> <number>. If <name> contains whitespace characters, enclose it in "".\nIf no arguments besides your password are passed, the app will return current phonebook entries'); process.exit(1);
+if (process.argv.length < 3) { 
+    console.log('Please enter your password as an argument.\nYou can add a new entry to the phonebook by specifying the following arguments: <name> <number>.\nIf <name> contains whitespace characters, enclose it in "".\nIf no arguments besides your password are passed, the app will return current phonebook entries'); process.exit(1);
+    process.exit(1);
+}
+
+if (process.argv.length === 4) {
+    console.log('Please add both <name> and <number> as arguments.');
+    process.exit(1);
 }
 
 const password = process.argv[2];
@@ -17,6 +24,7 @@ const personSchema = mongoose.Schema({
 
 const Person = mongoose.model('Person', personSchema);
 
+
 if (process.argv.length === 5) {
     const person = new Person({
         name: process.argv[3],
@@ -27,7 +35,9 @@ if (process.argv.length === 5) {
         mongoose.connection.close();
     });
 } else {
-    Person.find({}).then(result => {
+    Person.find({}).then(persons => {
+        let result = `Phonebook:\n`
+        persons.forEach(person => result = `${result}${person.name} ${person.number}\n`);
         console.log(result);
         mongoose.connection.close();
     });
