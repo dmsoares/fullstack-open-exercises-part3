@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 morgan.token('postData', req => JSON.stringify(req.body));
 
@@ -7,6 +8,7 @@ const app = express();
 
 app
     .use(express.json())
+    .use(cors())
     .use(express.static('build'))
     .use(morgan((tokens, req, res) => {
         const log = [
