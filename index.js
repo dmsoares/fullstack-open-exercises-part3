@@ -97,32 +97,15 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
     const person = req.body;
 
-    const generateId = () => {
-        let newId = 1;
-
-        while(persons.some(person => Number(person.id) === newId)) {
-            newId = Math.floor(Math.random() * 10000 + 1);
-        }
-        
-        return String(newId);
-    }
-
     if(!person || !person.name || !person.number) {
         return res.status(400).json({
             error: "syntax error: request incomplete"
         });
     };
 
-    if(persons.some(existingPerson => existingPerson.name === person.name)) {
-        return res.status(405).json({
-            error: "name must be unique"
-        });
-    };
+    const newPerson = new Person({ name: person.name, number: person.number });
 
-    const newPerson = { id: generateId(), ...person };
-    persons = [...persons, newPerson];
-
-    res.json(newPerson);
+    newPerson.save().then(person => res.json(person)); 
 });
 
 const PORT = process.env.PORT;
