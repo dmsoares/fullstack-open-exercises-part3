@@ -70,28 +70,30 @@ app.get('/info', (req, res) => {
 });
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const person = persons.find(person => Number(person.id) === id);
-    
-    if(!person) {
-        return res.status(404).json({
-            error: "no such person"
-        });
-    }
-    
-    isPerson(req, res, id, person => {
-        res.json(person);
-    });
+    const { id } = req.params;
 
+    Person.findById(id)
+        .then(person => {
+            if (person) return res.json(person);
+            res.status(404).end();
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(400).send({error: 'malformatted id'});
+        });
 }); 
 
 app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
+    const { id } = req.params;
 
-    isPerson(req, res, id, person => {
-        persons = persons.filter(person => Number(person.id) !== id);
-        res.json(person);
-    });
+    Person.findByIdAndRemove(id)
+        .then(person => {
+            res.status(204).end();
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(400).json({ error: 'malformatted id' });
+        });
 });
 
 app.post('/api/persons', (req, res) => {
