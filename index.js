@@ -101,7 +101,9 @@ app.post('/api/persons', (req, res) => {
 
     const newPerson = new Person({ name: person.name, number: person.number });
 
-    newPerson.save().then(person => res.json(person)); 
+    newPerson.save()
+        .then(person => res.json(person))
+        .catch(error => res.status(400).send({ error: error.message }));
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
