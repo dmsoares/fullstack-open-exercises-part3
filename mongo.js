@@ -1,44 +1,44 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-if (process.argv.length < 3) { 
-    console.log('Please enter your password as an argument.\nYou can add a new entry to the phonebook by specifying the following arguments: <name> <number>.\nIf <name> contains whitespace characters, enclose it in "".\nIf no arguments besides your password are passed, the app will return current phonebook entries'); process.exit(1);
-    process.exit(1);
+if (process.argv.length < 3) {
+  console.log('Please enter your password as an argument.\nYou can add a new entry to the phonebook by specifying the following arguments: <name> <number>.\nIf <name> contains whitespace characters, enclose it in "".\nIf no arguments besides your password are passed, the app will return current phonebook entries'); process.exit(1)
+  process.exit(1)
 }
 
 if (process.argv.length === 4) {
-    console.log('Please add both <name> and <number> as arguments.');
-    process.exit(1);
+  console.log('Please add both <name> and <number> as arguments.')
+  process.exit(1)
 }
 
-const password = process.argv[2];
+const password = process.argv[2]
 
-const url = 
+const url =
     `mongodb+srv://fullstack:${password}@cluster0.zd3ku.mongodb.net/phonebook?retryWrites=true&w=majority`
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 
 const personSchema = mongoose.Schema({
-    name: String,
-    number: String
-});
+  name: String,
+  number: String
+})
 
-const Person = mongoose.model('Person', personSchema);
+const Person = mongoose.model('Person', personSchema)
 
 
 if (process.argv.length === 5) {
-    const person = new Person({
-        name: process.argv[3],
-        number: process.argv[4]
-    });
-    person.save().then(result => {
-        console.log(`${person.name} was added to the phonebook!`);
-        mongoose.connection.close();
-    });
+  const person = new Person({
+    name: process.argv[3],
+    number: process.argv[4]
+  })
+  person.save().then(result => {
+    console.log(`${person.name} was added to the phonebook!`)
+    mongoose.connection.close()
+  })
 } else {
-    Person.find({}).then(persons => {
-        let result = `Phonebook:\n`
-        persons.forEach(person => result = `${result}${person.name} ${person.number}\n`);
-        console.log(result);
-        mongoose.connection.close();
-    });
+  Person.find({}).then(persons => {
+    let result = 'Phonebook:\n'
+    persons.forEach(person => result = `${result}${person.name} ${person.number}\n`)
+    console.log(result)
+    mongoose.connection.close()
+  })
 }
