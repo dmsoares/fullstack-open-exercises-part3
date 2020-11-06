@@ -90,7 +90,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
         .catch(error => next(error));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const person = req.body;
 
     if(!person || !person.name || !person.number) {
@@ -103,14 +103,19 @@ app.post('/api/persons', (req, res) => {
 
     newPerson.save()
         .then(person => res.json(person))
-        .catch(error => res.status(400).send({ error: error.message }));
+        .catch(error => next(error));
 });
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// TODO: CHECK VALIDATOR FOR UPDATE
+// TODO: MAKE FRONTEND WORK
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 app.put('/api/persons/:id', (req, res, next) => {
     const { id } = req.params;
     const { number } = req.body;
 
-    Person.findByIdAndUpdate(id, { number }, { new: true })
+    Person.findByIdAndUpdate(id, { number }, { new: true, runValidators: true })
         .then(person => {
             if (person) return res.json(person);
             res.status(404).end();
@@ -125,10 +130,9 @@ const unknownEndpoint = (req, res) => {
 app.use(unknownEndpoint);
 
 const errorHandler = (error, req, res, next) => {
-    console.log(error);
-    if (error.name === 'CastError') {
-        res.status(400).send({ error: 'malformatted id' });
-    }
+    console.log(error.name, error.message);
+    if (error.name === 'CastError') return res.status(400).send({ error: 'malformatted id' });
+    if (error.name === 'ValidationError') return res.status(400).send({ error: error.message });
 
     next(error);
 }
